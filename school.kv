@@ -18,40 +18,37 @@ ScreenManager:
 
 
 <PasswordUpdateDialog>:
-    orientation: "vertical"
-    spacing: "12dp"
-    size_hint_y: None
-    height: "30dp"
+    title: "Update Password"
+    size_hint: (0.8, 0.18)
 
-    MDTextField:
-        hint_text: "Password"
+    MDBoxLayout:
+        orientation: "vertical"
 
+        TextInput:
+            id: update_password
+            password: True
+            size_hint: (1, 0.01)
 
-<BorrowedNotification@FloatLayout>:
-    size_hint: (None, None)
-    size: (0, 0)
-    MDRoundFlatButton:
-        text: '2'
-        size_hint: (.3, .2)
-        pos: (255, 905)
-        background_color: 0, 0, 0, 0
+        MDGridLayout:
+            cols: 2
+            rows: 1
+            size_hint: (1, 0.01)
 
+            Button:
+                size_hint: dp(1), None
+                text: "close"
+                icon: "update"
+                size_hint: (1, 0.01)
+                on_press:
+                    root.dismiss()
 
-<holdNotification@FloatLayout>:
-    size_hint: (None, None)
-    size: (0, 0)
-    MDRoundFlatButton:
-        text: '0'
-        size_hint: (.3, .2)
-        pos: (625, 905)
-
-<readyNotification@FloatLayout>:
-    size_hint: (None, None)
-    size: (0, 0)
-    MDRoundFlatButton:
-        text: '3'
-        size_hint: (.3, .2)
-        pos: (425, 485)
+            Button:
+                size_hint: dp(1), None
+                text: "update"
+                size_hint: (1, 0.01)
+                on_press:
+                    root.get_pass_update()
+                    root.dismiss()
 
 <Footer@MDGridLayout>:
     cols: 7
@@ -98,6 +95,7 @@ ScreenManager:
 <LogInScreen>:
     name: "LogInScreen"
     password_entered: password_entered
+    student_id: student_id
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -123,11 +121,10 @@ ScreenManager:
                 size: self.size
 
         MDTextFieldRound:
-            id: password_entered
+            id: student_id
             icon_right: "lock"
             hint_text: "PERSON ID"
             required: True
-            input_filter: "float"
             color_mode: 'custom'
             line_color_focus: 1, 1, 1, 1
             color: 1, 1, 1, 1
@@ -254,37 +251,64 @@ ScreenManager:
 
     MDGridLayout:
         cols: 3
-        rows: 3
+        rows: 2
         padding: 100
         spacing: 50
 
         pos_hint: {'center_x': 0.501, 'center_y': 0}
-        size_hint: (0.9, 0.9)
+        size_hint: (1, 0.9)
 
-        Image:
-            source: 'images/borrowedbooks.png'
+        MDGridLayout:
+            cols: 2
+            rows: 1
+#            orientation: 'lr-tb'
+
+            Image:
+                source: 'images/borrowedbooks.png'
+
+            Label:
+                text: '2'
+                size_hint:(0.1, 2)
+                color: 1,0,1,1
+
+        MDLabel:
             size_hint_x: 0
 
-        Widget:
+        MDGridLayout:
+            cols: 2
+            rows: 1
+#            orientation: 'lr-tb'
+
+
+            Image:
+                source: 'images/group.png'
+
+            Label:
+                text: '0'
+                size_hint:(0.1, 2)
+                color: 1,0,1,1
+
+        MDLabel:
             size_hint_x: 0
 
-        Image:
-            source: 'images/group.png'
+
+        MDGridLayout:
+            cols: 2
+            rows: 1
+#            orientation: 'lr-tb'
+
+            Image:
+                source: 'images/booksready.png'
+                size_hint_x: 1
+
+            Label:
+                text: '3'
+                size_hint:(0.1, 2)
+                color: 1,0,1,1
+
+        MDLabel:
             size_hint_x: 0
 
-        Widget:
-            size_hint_x: 1
-
-        Image:
-            source: 'images/booksready.png'
-            size_hint_x: 1
-
-        Widget:
-            size_hint_x: 1
-
-    BorrowedNotification:
-    holdNotification:
-    readyNotification:
 
     Footer:
 
@@ -373,11 +397,11 @@ ScreenManager:
                 text: '(956)5830045'
                 theme_text_color: "Custom"
                 text_color: 0, 0, 0, 1
-            MDRoundFlatButton:
-                text: "update"
-                size: (0.4, 0)
-                on_press:
-                    app.show_phone_update_dialog()
+#            MDRoundFlatButton:
+#                text: "update"
+#                size: (0.4, 0)
+#                on_press:
+#                    app.show_phone_update_dialog()
 
         MDLabel:
             text: 'Password'
@@ -394,9 +418,8 @@ ScreenManager:
                 text_color: 0, 0, 0, 1
             MDRoundFlatButton:
                 text: "update"
-                size: (0.4, 0)
                 on_press:
-                    app.show_password_update_dialog()
+                    root.show_password_update_dialog()
 
     Label:
         size_hint: 1, 0.3
