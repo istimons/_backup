@@ -1,0 +1,7 @@
+Mongo DB Host:  44.199.16.91
+Database:       lapiz
+Port:           29017
+User:           library
+Password:       will be provided personally
+
+
