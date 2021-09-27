@@ -1,0 +1,52 @@
+[
+    {
+        "author_id": "JM-168",
+        "author_first": "Julie",
+        "author_middle": "",
+        "author_last": "Mills",
+        "author_short_name": "",
+        "author_country": "USA",
+        "author_phone": "",
+        "author_website": ""
+    },
+    {
+        "author_id": "AR-346",
+        "author_first": "Arnold",
+        "author_middle": "",
+        "author_last": "Ringstad",
+        "author_short_name": "",
+        "author_country": "UK",
+        "author_phone": "",
+        "author_website": ""
+    },
+    {
+        "author_id": "LS-670",
+        "author_first": "Laura Amy",
+        "author_middle": "",
+        "author_last": "Schlitz",
+        "author_short_name": "",
+        "author_country": "USA",
+        "author_phone": "",
+        "author_website": "https://www.amazon.com/Laura-Amy-Schlitz/e/B001H6O5V6/ref=dp_byline_cont_pop_book_1"
+    },
+    {
+        "author_id": "AS-233",
+        "author_first": "Amy",
+        "author_middle": "",
+        "author_last": "Stewart",
+        "author_short_name": "",
+        "author_country": "USA",
+        "author_phone": "",
+        "author_website": ""
+    },
+    {
+        "author_id": "JM-105",
+        "author_first": "Jess",
+        "author_middle": "",
+        "author_last": "Montgomery",
+        "author_short_name": "",
+        "author_country": "USA",
+        "author_phone": "",
+        "author_website": ""
+    }
+]

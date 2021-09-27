@@ -1,0 +1,38 @@
+[
+    {
+        "resource_type_code": "HB",
+        "resource_type_description": "Hard Bound"
+    },
+    {
+        "resource_type_code": "PB",
+        "resource_type_description": "Paper Back"
+    },
+    {
+        "resource_type_code": "RE",
+        "resource_type_description": "Reference Book"
+    },
+    {
+        "resource_type_code": "NP",
+        "resource_type_description": "News Paper"
+    },
+    {
+        "resource_type_code": "MG",
+        "resource_type_description": "Magazine"
+    },
+    {
+        "resource_type_code": "IM",
+        "resource_type_description": "International Magazine"
+    },
+    {
+        "resource_type_code": "DV",
+        "resource_type_description": "DVD"
+    },
+    {
+        "resource_type_code": "EB",
+        "resource_type_description": "Electronic Book"
+    },
+    {
+        "resource_type_code": "CD",
+        "resource_type_description": "Compact Disk Audio"
+    }
+]
