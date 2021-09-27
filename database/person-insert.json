@@ -1,0 +1,68 @@
+[
+    {
+        "_id": "100001",
+        "first_name": "john",
+        "last_name": "Joseph",
+        "person_type_id": 1,
+        "date_of_birth": "2000-04-08",
+        "national_id": "123456789",
+        "nationality": "USA",
+        "gender": "M",
+        "parent_id": "10001"
+    },
+    {
+        "_id": "100002",
+        "first_name": "Matt",
+        "last_name": "Grant",
+        "person_type_id": 1,
+        "date_of_birth": "2000-09-23",
+        "national_id": "920056789",
+        "nationality": "USA",
+        "gender": "M",
+        "parent_id": "10002"
+    },
+    {
+        "_id": "100003",
+        "first_name": "Anna",
+        "last_name": "Peterson",
+        "person_type_id": 1,
+        "date_of_birth": "2002-11-01",
+        "national_id": "344805700",
+        "nationality": "USA",
+        "gender": "F",
+        "parent_id": "10003"
+    },
+    {
+        "_id": "100004",
+        "first_name": "Mike",
+        "last_name": "Crosley",
+        "person_type_id": 1,
+        "date_of_birth": "2005-12-13",
+        "national_id": "330056733",
+        "nationality": "USA",
+        "gender": "M",
+        "parent_id": "10004"
+    },
+    {
+        "_id": "100005",
+        "first_name": "Jenifer",
+        "last_name": "Williams",
+        "person_type_id": 1,
+        "date_of_birth": "2005-01-30",
+        "national_id": "200569754",
+        "nationality": "USA",
+        "gender": "F",
+        "parent_id": "10005"
+    },
+    {
+        "_id": "100006",
+        "first_name": "Jenifer",
+        "last_name": "Williams",
+        "person_type_id": 1,
+        "date_of_birth": "2005-04-22",
+        "national_id": "848567155",
+        "nationality": "USA",
+        "gender": "M",
+        "parent_id": "10006"
+    }
+]
