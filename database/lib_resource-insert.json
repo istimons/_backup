@@ -57,7 +57,10 @@
         "purchased_price": "14.28",
         "current_value": "13.00",
         "copies": 10,
-        "genre": "FICT"
+        "genre": "FICT",
+        "borrow_history": [
+            {"student_id": "MC92992", "borrowed_date":"2021-01-05", "returned_date":"2021-01-27"}
+        ]
     },
     {
         "_id": "1000004",
@@ -77,7 +80,11 @@
         "purchased_price": "11.99",
         "current_value": "11.99",
         "copies": 15,
-        "genre": "FICT"
+        "genre": "FICT",
+        "borrow_history": [
+            {"student_id": "JJ45768", "borrowed_date": "2021-03-19", "returned_date": "2021-03-30"},
+            {"student_id": "MC92992", "borrowed_date":"2021-04-22", "returned_date":""}
+        ]
     },
     {
         "_id": "1000005",
@@ -97,6 +104,10 @@
         "purchased_price": "14.49",
         "current_value": "15.00",
         "copies": 5,
-        "genre": "FICT"
+        "genre": "FICT",
+        "borrow_history": [
+            {"student_id": "JJ45768", "borrowed_date": "2021-03-19", "returned_date": "2021-03-31"},
+            {"student_id": "MC92992", "borrowed_date":"2021-04-22", "returned_date":"2021-05-14"}
+        ]
     }
 ]
