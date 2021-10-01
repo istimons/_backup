@@ -1,0 +1,46 @@
+Screen:
+    MDCard:
+        size_hint: 0,0
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        orientation: 'vertical'
+
+        Image:
+            id: school_logo
+            source: 'logo.jpeg'
+            allow_stretch: False
+    
+        MDTextField:
+            id: user
+            hint_text: "login id"
+            hint_font_size: 45
+            icon_right: "account"
+            size_hint_x: None
+            width: 400
+            font_size: 45
+            pos_hint: {'center_x': 0.5}
+            padding: 200
+
+    
+        MDTextField:
+            id: password
+            hint_text: "password"
+            icon_right: "eye-off"
+            size_hint_x: None
+            width: 400
+            font_size: 45
+            pos_hint: {'center_x': 0.5}
+            padding: 200
+            password: True
+
+        MDRoundFlatIconButton:
+            id: login_button
+            text: "Login"
+            icon: "login"
+            width: 700
+            font_size: 35
+            pos_hint: {'center_x': 0.5}
+            padding: 500
+            md_bg_color: 1, 0, 1, 0
+            on_press: print("ouch! More gently please")
+
+        
