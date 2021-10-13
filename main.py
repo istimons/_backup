@@ -1,61 +1,24 @@
-import sqlite3
-from abc import ABC
-
-from threading import Thread
-from time import sleep
-from kivymd.toast import toast
-from kivymd.uix.button import MDFillRoundFlatIconButton, MDFlatButton
-from kivy.clock import mainthread
 from kivy.gesture import GestureDatabase
-from kivy.properties import BooleanProperty, ObjectProperty, ListProperty, StringProperty
+from kivy.metrics import *
+from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 from kivy.uix.behaviors import FocusBehavior
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
-from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.dialog import MDDialog
-from kivy.metrics import *
 from kivymd.app import MDApp
-from kivymd.uix.boxlayout import BoxLayout
-from kivymd.uix.button import MDIconButton
-from kivymd.uix.list import ILeftBodyTouch, OneLineAvatarIconListItem, TwoLineAvatarIconListItem
-from kivy.factory import Factory
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.theming import ThemableBehavior
+from kivymd.toast import toast
+from kivymd.uix.boxlayout import BoxLayout
+from kivymd.uix.dialog import MDDialog
+from kivymd.uix.list import TwoLineAvatarIconListItem
+from kivymd.uix.screen import MDScreen
 
 
 searchBarData = ['school', 'library', 'management', 'with', 'search', 'capability']
 
-''' Start with a DataBase, create one if it does not exist. '''
-
-try:
-    connection = sqlite3.connect("school.db")
-    cursor = connection.cursor()
-
-    cursor.execute(""" CREATE table Tasks
-     (title nvarchar,
-     overall INTEGER,
-     currency varchar,
-     description varchar,
-     main varchar)
-     """)
-
-    cursor.execute(""" CREATE TABLE Users
-        (username varchar   NOT NULL,
-        password varchar NOT NULL)        
-        """)
-
-    connection.commit()
-    cursor.close()
-    connection.close()
-except sqlite3.OperationalError:
-    pass
-
-
 # ----- Recycle view options------- #
+
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
@@ -87,25 +50,6 @@ class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
 
 # ----- Recycle view options end------- #
 
-class PhoneUpdateDialog(BoxLayout):
-    """ Show a pop up dialog to update phone number to the database """
-
-
-class PasswordUpdateDialog(BoxLayout):
-    """ Show a pop up dialog to update password to the database """
-
-
-class PasswordPhoneUpdateScreen(ThemableBehavior, MDScreen):
-    """ Ability of users to change their passwords """
-
-    def __init__(self, **kwargs):
-        super(PasswordPhoneUpdateScreen, self).__init__(**kwargs)
-
-
-class PasswordPhoneBoxUpdate(BoxLayout):
-    """ Password change ability container """
-
-
 class CatalogSearchScreen(ThemableBehavior, MDScreen):
     """ Dashboard class for items Catalog search """
 
@@ -120,8 +64,6 @@ class CatalogSearchBoxScreen(BoxLayout):
 
     """
 
-    search_input = ObjectProperty()
-
     def __init__(self, **kwargs):
         super(CatalogSearchBoxScreen, self).__init__(**kwargs)
 
@@ -129,7 +71,6 @@ class CatalogSearchBoxScreen(BoxLayout):
         """ Builds a list of items for the screen """
 
         def add_item(item_name):
-
             self.ids.search_results_list.data.append(
                 {
                     "viewclass": "SelectableButton",
@@ -165,9 +106,13 @@ class LibraryDashboardBoxScreen(BoxLayout):
     def __init__(self, **kwargs):
         super(LibraryDashboardBoxScreen, self).__init__(**kwargs)
 
+    def search_cloud_data(self):
+        catalog_search_entry = self.ids.lib_search_input.text
+
 
 class LogInScreen(ThemableBehavior, MDScreen):
     password_entered = ObjectProperty()
+    student_id = ObjectProperty()
 
     def __init__(self, **kw):
         super().__init__(**kw)
@@ -177,37 +122,176 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
     def get_user_password(self):
         """ implement MongoDB connection to users that already has access their account"""
-        # password_entry = self.password_entered
-        self.switch_to_dashboard_screen()
 
-        # try:
-        #     connection_user = sqlite3.connect("school.db")
-        #     cursor_user_passwd = connection_user.cursor()
-        #     cursor_user_passwd.execute("SELECT username, password from Users")
-        #     user_data = cursor_user_passwd.fetchall()
+        password_entry = self.password_entered
+        student_id_ent = self.student_id
+        # self.switch_to_dashboard_screen()
+
+        from pymongo import MongoClient
+
+        cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+        db = cluster["lapiz"]
+
+        stud_results = db.student.find({'_id': student_id_ent.text})
+
+        for r in stud_results:
+            F_name = r.get('first_name')
+            S_name = r.get('last_name')
+            person_name = F_name + ' ' + S_name
+            person_grade = r.get('class')
+            person_id = r.get('_id')
+            person_phone = r.get('phone')
+            person_password = r.get('password')
+            profile_image_link = r.get('photo_lnk')
+
+            if person_password != password_entry.text or len(person_password) == 0:
+                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+                wrong_password_dialog.radius = [20, 7, 20, 7]
+                wrong_password_dialog.size_hint_x = dp(0.5)
+                wrong_password_dialog.open()
+
+            elif person_id != student_id_ent.text or len(person_id) == 0:
+                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+                wrong_password_dialog.radius = [20, 7, 20, 7]
+                wrong_password_dialog.size_hint_x = dp(0.5)
+                wrong_password_dialog.open()
+
+            else:
+
+                ''' Temporary MongoDb user storage [ on_user_logIn ]'''
+
+                import json
+                name = person_name
+                grade = person_grade
+                stud_id = person_id
+                phone = person_phone
+                passwd = person_password
+                photo_link = profile_image_link
+
+                person_data = {}
+
+                person_data['user'] = []
+                person_data['user'].append({
+                    'name': name,
+                    'grade': grade,
+                    'stud_id': stud_id,
+                    'phone': phone,
+                    'passwd': passwd,
+                    'photo_link': photo_link
+                })
+
+                with open('_file.txt', 'w') as outputfile:
+                    json.dump(person_data, outputfile)
+
+                ''' Temporary MongoDb user storage END'''
+
+                self.switch_to_dashboard_screen()
+
+
+class PhoneUpdateDialog(BoxLayout):
+    """ Show a pop up dialog to update phone number to the database """
+
+
+class PasswordUpdateDialog(BoxLayout):
+    """ Show a pop up dialog to update password to the database """
+
+
+class PasswordPhoneUpdateScreen(ThemableBehavior, MDScreen):
+    """ Ability of users to change their passwords """
+
+    def __init__(self, **kwargs):
+        super(PasswordPhoneUpdateScreen, self).__init__(**kwargs)
+
+    def on_pre_enter(self, *args):
+        toast('Touch to Update', duration=2.0)
+
+
+class PasswordPhoneBoxUpdate(BoxLayout):
+    """ Password change ability container """
+
+    def __init__(self, **kwargs):
+        super(PasswordPhoneBoxUpdate, self).__init__(**kwargs)
+
+    def show_password_update_dialog(self):
+        pop_pass_change = PasswordUpdateDialog(set)
+        pop_pass_change.open()
+
+    def show_phone_update_dialog(self):
+        pop_phone_change = PhoneUpdateDialog(set)
+        pop_phone_change.open()
+
+
+class PasswordUpdateDialog(Popup):
+    """ Show a pop up dialog to update password to the database """
+
+    update_password = ObjectProperty()
+
+    def __init__(self, update_password, **kwargs):
+        super(PasswordUpdateDialog, self).__init__(**kwargs)
+
+        self.update_password = update_password
+
+    def get_pass_update(self):
+        from pymongo import MongoClient
+
+        cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+        db = cluster["lapiz"]
+        recent_logged_id = LogInScreen()
+        recent = recent_logged_id.ids['student_id']
+        print(recent)
+
+        # stud_results = db.student.find({'_id': LogInScreen.student_id.text}, {'password': password_entry.text})
+        # for r in stud_results:
+        #     person_id = r.get('_id')
+        #     person_password = r.get('password')
         #
-        #     passwd = user_data[0][1]  # add more marching conditions
-        #     print('current password is %s' % passwd)
-        #     if passwd != password_entry.text or len(passwd) == 0:
-        #         wrong_password_dialog = MDDialog(text="Wrong Password")
-        #         wrong_password_dialog.radius = [20, 7, 20, 7]
-        #         wrong_password_dialog.size_hint_x = dp(0.5)
-        #         wrong_password_dialog.open()
-        #     else:
-        #         success_dialog = MDDialog(text="Success!")
-        #         success_dialog.radius = [20, 7, 20, 7]
-        #         success_dialog.size_hint_x = dp(0.4)
-        #         success_dialog.open()
-        #         self.switch_to_dashboard_screen()
+        # password_query = { "password": "Valley 345" }
+        # password_new_val = { "$set": { "address": "Canyon 123" } }
 
-        # except IndexError:
-        #     pass
+        # mycol.update_one(password_query, password_new_val)
+
+
+class PhoneUpdateDialog(Popup):
+    """ Show a pop up dialog to update password to the database """
+
+    update_phone = ObjectProperty()
+
+    def __init__(self, update_phone, **kwargs):
+        super(PhoneUpdateDialog, self).__init__(**kwargs)
+        self.update_phone = update_phone
+
+    def update_phone(self):
+        print('Updating Phone... ')
 
 
 class SchoolApp(MDApp):
     """ Main class Application """
+    _name_data = 'name'
+    _grade_data = 'grade'
+    _student_id_data = 'id'
+    _phone_data = 'phone'
+    _password_data = '******'
+    _profile_image = ''
 
-    dialog = None
+    name = ObjectProperty(_name_data)
+    grade = ObjectProperty(_grade_data)
+    student_id = ObjectProperty(_student_id_data)
+    phone = ObjectProperty(_phone_data)
+    password = ObjectProperty(_password_data)
+    profile_image = ObjectProperty(_profile_image)
+
+    def get_user_profile_info(self):
+        import json
+
+        with open('_file.txt') as json_file:
+            data = json.load(json_file)
+            for p in data['user']:
+                self.name = p['name']
+                self.grade = p['grade']
+                self.student_id = p['stud_id']
+                self.phone = p['phone']
+                self.password = p['passwd']
+                self.profile_image = p['photo_link']
 
     def __init__(self, **kwargs):
         super(SchoolApp, self).__init__(**kwargs)
@@ -222,42 +306,15 @@ class SchoolApp(MDApp):
     def switch_to_dashboard_screen(self):
         self.root.current = 'LibraryDashboardScreen'
 
-    def show_phone_update_dialog(self):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                title="Update Phone:",
-                type="custom",
-                content_cls=PhoneUpdateDialog(),
-                buttons=[
-                    MDFlatButton(
-                        text="CANCEL", text_color=self.theme_cls.primary_color
-                    ),
-                    MDFlatButton(
-                        text="OK", text_color=self.theme_cls.primary_color
-                    ),
-                ],
-            )
-        self.dialog.open()
-
-    def show_password_update_dialog(self):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                title="Update Password:",
-                type="custom",
-                content_cls=PasswordUpdateDialog(),
-                buttons=[
-                    MDFlatButton(
-                        text="CANCEL", text_color=self.theme_cls.primary_color
-                    ),
-                    MDFlatButton(
-                        text="OK", text_color=self.theme_cls.primary_color
-                    ),
-                ],
-            )
-        self.dialog.open()
+    def switch_log_in_screen(self):
+        self.root.current = 'LogInScreen'
 
 
 if __name__ == '__main__':
     from kivy.core.window import Window
+
     Window.size = (400, 650)
     SchoolApp().run()
+
+
+
