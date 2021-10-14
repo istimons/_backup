@@ -1,4 +1,4 @@
-from kivy.gesture import GestureDatabase
+from pymongo import MongoClient
 from kivy.metrics import *
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 from kivy.uix.behaviors import FocusBehavior
@@ -125,9 +125,6 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
         password_entry = self.password_entered
         student_id_ent = self.student_id
-        # self.switch_to_dashboard_screen()
-
-        from pymongo import MongoClient
 
         cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
         db = cluster["lapiz"]
@@ -213,11 +210,11 @@ class PasswordPhoneBoxUpdate(BoxLayout):
         super(PasswordPhoneBoxUpdate, self).__init__(**kwargs)
 
     def show_password_update_dialog(self):
-        pop_pass_change = PasswordUpdateDialog(set)
+        pop_pass_change = PasswordUpdateDialog()
         pop_pass_change.open()
 
     def show_phone_update_dialog(self):
-        pop_phone_change = PhoneUpdateDialog(set)
+        pop_phone_change = PhoneUpdateDialog()
         pop_phone_change.open()
 
 
@@ -226,29 +223,34 @@ class PasswordUpdateDialog(Popup):
 
     update_password = ObjectProperty()
 
-    def __init__(self, update_password, **kwargs):
+    def __init__(self, **kwargs):
         super(PasswordUpdateDialog, self).__init__(**kwargs)
 
-        self.update_password = update_password
-
     def get_pass_update(self):
-        from pymongo import MongoClient
+        password_update = self.update_password
 
         cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
         db = cluster["lapiz"]
-        recent_logged_id = LogInScreen()
-        recent = recent_logged_id.ids['student_id']
-        print(recent)
 
-        # stud_results = db.student.find({'_id': LogInScreen.student_id.text}, {'password': password_entry.text})
-        # for r in stud_results:
-        #     person_id = r.get('_id')
-        #     person_password = r.get('password')
-        #
-        # password_query = { "password": "Valley 345" }
-        # password_new_val = { "$set": { "address": "Canyon 123" } }
+        import json
 
-        # mycol.update_one(password_query, password_new_val)
+        with open('_file.txt') as json_file:
+            data = json.load(json_file)
+            for p in data['user']:
+                self.student_id = p['stud_id']
+                self.recent_password = p['passwd']
+                self.recent_phone = p['phone']
+
+                stud_results = db.student.find({'_id': self.student_id})
+                for r in stud_results:
+                    person_password = r.get('password')
+
+                    mycol = db["student"]
+
+                    myquery = {"password": person_password}
+                    newvalues = {"$set": {"password": password_update.text}}
+
+                    mycol.update_one(myquery, newvalues)
 
 
 class PhoneUpdateDialog(Popup):
@@ -256,12 +258,31 @@ class PhoneUpdateDialog(Popup):
 
     update_phone = ObjectProperty()
 
-    def __init__(self, update_phone, **kwargs):
+    def __init__(self, **kwargs):
         super(PhoneUpdateDialog, self).__init__(**kwargs)
-        self.update_phone = update_phone
 
-    def update_phone(self):
-        print('Updating Phone... ')
+    def get_phone_update(self):
+        phone_update = self.update_phone
+        cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+        db = cluster["lapiz"]
+
+        import json
+
+        with open('_file.txt') as json_file:
+            data = json.load(json_file)
+            for p in data['user']:
+                self.student_id = p['stud_id']
+
+                stud_results = db.student.find({'_id': self.student_id})
+                for r in stud_results:
+                    person_phone = r.get('phone')
+
+                    mycol = db["student"]
+
+                    myquery = {"phone": person_phone}
+                    newvalues = {"$set": {"phone": phone_update.text}}
+
+                    mycol.update_one(myquery, newvalues)
 
 
 class SchoolApp(MDApp):

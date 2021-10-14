@@ -8,10 +8,10 @@ ScreenManager:
     LibraryDashboardScreen:
     PasswordPhoneUpdateScreen:
 
-
 <PasswordUpdateDialog>:
     title: "Update Password"
     size_hint: (0.8, 0.18)
+    update_password: update_password
 
     MDBoxLayout:
         orientation: "vertical"
@@ -46,6 +46,8 @@ ScreenManager:
     title: "Update Phone"
     size_hint: (0.8, 0.18)
 
+    update_phone: update_phone
+
     MDBoxLayout:
         orientation: "vertical"
 
@@ -71,7 +73,7 @@ ScreenManager:
                 text: "update"
                 size_hint: (1, 0.01)
                 on_press:
-                    root.update_phone()
+                    root.get_phone_update()
                     root.dismiss()
 
 <Footer@MDGridLayout>:
@@ -208,13 +210,27 @@ ScreenManager:
     Label:
         size_hint: 1, 0.05
 
-    MDTextFieldRound:
-        id: search_input
-        size_hint: 0.7, 0.1
-        pos_hint: {'center_x': 0.5, 'center_y': 1}
-        icon_right: 'book-search'
-        on_text:
-            root.set_items_list(self.text, True)
+    MDGridLayout:
+        cols: 3
+        padding: 10
+        spacing: 0.01
+
+        pos_hint: {'center_x': 0.5, 'center_y': 20}
+        size_hint: (0.8, 0.09)
+
+        MDTextFieldRound:
+            id: search_input
+            size_hint: 0.7, 0.1
+            pos_hint: {'center_x': 0.5, 'center_y': 1}
+            on_text:
+                root.set_items_list(self.text, True)
+
+        FloatLayout:
+            size_hint: (None, None)
+            size: (5, 5)
+            MDIconButton:
+                icon: 'book-search'
+                pos_hint: {'center_x': 0.000001, 'center_y': 7}
 
     MDLabel:
         markup: True
@@ -241,6 +257,7 @@ ScreenManager:
             orientation: 'vertical'
             spacing: dp(2)
             padding: dp(2)
+
     MDLabel:
         size_hint: 1, 0.02
 
@@ -278,6 +295,7 @@ ScreenManager:
             pos_hint: {'center_x': 0.9, 'center_y': 1}
             hint_text: 'CATALOG SEARCH'
             text_size: None, None
+
 
         FloatLayout:
             size_hint: (None, None)
@@ -381,7 +399,7 @@ ScreenManager:
 #                angle_end: 360
 
         AsyncImage:
-            radius: [376, 36, 0, 0, ]
+            border: 30,30,30,30
             source: app.profile_image
 
 
@@ -470,3 +488,4 @@ ScreenManager:
     Footer:
     Label:
         size_hint: 1, 0.02
+
