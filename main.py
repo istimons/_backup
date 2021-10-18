@@ -1,3 +1,5 @@
+import sqlite3
+
 from pymongo import MongoClient
 from kivy.metrics import *
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
@@ -16,6 +18,38 @@ from kivymd.uix.screen import MDScreen
 
 
 searchBarData = ['school', 'library', 'management', 'with', 'search', 'capability']
+
+
+def _create_local_db():
+    ''' Start with a Local DataBase, create one if it does not exist. '''
+
+    try:
+        connection = sqlite3.connect("school.db")
+        cursor = connection.cursor()
+
+        cursor.execute(""" CREATE TABLE user
+            (studentId varchar   NOT NULL,
+            password varchar NOT NULL,
+            entries varchar,
+            name varchar,
+            grade varchar,
+            phone varchar,
+            photo_link varchar)
+         """)
+
+        cursor.execute(""" CREATE INDEX studentId on user (studentId) """)
+        cursor.execute(""" CREATE INDEX password on user (password) """)
+        cursor.execute(""" CREATE INDEX name on user (name) """)
+        cursor.execute(""" CREATE INDEX grade on user (grade) """)
+        cursor.execute(""" CREATE INDEX phone on user (phone) """)
+        cursor.execute(""" CREATE INDEX photo_link on user (photo_link) """)
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except sqlite3.OperationalError:
+        pass
+
 
 # ----- Recycle view options------- #
 
@@ -125,6 +159,7 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
         password_entry = self.password_entered
         student_id_ent = self.student_id
+        # self.switch_to_dashboard_screen()
 
         cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
         db = cluster["lapiz"]
@@ -155,9 +190,7 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
             else:
 
-                ''' Temporary MongoDb user storage [ on_user_logIn ]'''
-
-                import json
+                # ''' Temporary MongoDb user storage [ on_user_logIn ]'''
                 name = person_name
                 grade = person_grade
                 stud_id = person_id
@@ -165,24 +198,20 @@ class LogInScreen(ThemableBehavior, MDScreen):
                 passwd = person_password
                 photo_link = profile_image_link
 
-                person_data = {}
+                connection = sqlite3.connect("school.db")
+                cursor = connection.cursor()
+                data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
+                cursor.execute(data_query)
 
-                person_data['user'] = []
-                person_data['user'].append({
-                    'name': name,
-                    'grade': grade,
-                    'stud_id': stud_id,
-                    'phone': phone,
-                    'passwd': passwd,
-                    'photo_link': photo_link
-                })
+                connection.commit()
+                cursor.close()
+                connection.close()
 
-                with open('_file.txt', 'w') as outputfile:
-                    json.dump(person_data, outputfile)
-
-                ''' Temporary MongoDb user storage END'''
+                # ''' Temporary MongoDb user storage END'''
 
                 self.switch_to_dashboard_screen()
+                password_entry.text = ''
+                student_id_ent.text = ''
 
 
 class PhoneUpdateDialog(BoxLayout):
@@ -232,25 +261,31 @@ class PasswordUpdateDialog(Popup):
         cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
         db = cluster["lapiz"]
 
-        import json
+        connection = sqlite3.connect("school.db")
+        cursor = connection.cursor()
+        data_query = "select * from user"
+        cursor.execute(data_query)
 
-        with open('_file.txt') as json_file:
-            data = json.load(json_file)
-            for p in data['user']:
-                self.student_id = p['stud_id']
-                self.recent_password = p['passwd']
-                self.recent_phone = p['phone']
+        fetch = cursor.fetchone()
 
-                stud_results = db.student.find({'_id': self.student_id})
-                for r in stud_results:
-                    person_password = r.get('password')
+        connection.commit()
+        cursor.close()
+        connection.close()
 
-                    mycol = db["student"]
+        self.student_id = fetch[0]
+        self.recent_password = fetch[1]
+        self.recent_phone = fetch[5]
 
-                    myquery = {"password": person_password}
-                    newvalues = {"$set": {"password": password_update.text}}
+        stud_results = db.student.find({'_id': self.student_id})
+        for r in stud_results:
+            person_password = r.get('password')
 
-                    mycol.update_one(myquery, newvalues)
+            mycol = db["student"]
+
+            myquery = {"password": person_password}
+            newvalues = {"$set": {"password": password_update.text}}
+
+            mycol.update_one(myquery, newvalues)
 
 
 class PhoneUpdateDialog(Popup):
@@ -262,27 +297,35 @@ class PhoneUpdateDialog(Popup):
         super(PhoneUpdateDialog, self).__init__(**kwargs)
 
     def get_phone_update(self):
+        """ method to update user phone number """
+
         phone_update = self.update_phone
         cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
         db = cluster["lapiz"]
 
-        import json
+        connection = sqlite3.connect("school.db")
+        cursor = connection.cursor()
+        data_query = "select * from user"
+        cursor.execute(data_query)
 
-        with open('_file.txt') as json_file:
-            data = json.load(json_file)
-            for p in data['user']:
-                self.student_id = p['stud_id']
+        fetch = cursor.fetchone()
 
-                stud_results = db.student.find({'_id': self.student_id})
-                for r in stud_results:
-                    person_phone = r.get('phone')
+        connection.commit()
+        cursor.close()
+        connection.close()
 
-                    mycol = db["student"]
+        self.student_id = fetch[0]
 
-                    myquery = {"phone": person_phone}
-                    newvalues = {"$set": {"phone": phone_update.text}}
+        stud_results = db.student.find({'_id': self.student_id})
+        for r in stud_results:
+            person_phone = r.get('phone')
 
-                    mycol.update_one(myquery, newvalues)
+            mycol = db["student"]
+
+            myquery = {"phone": person_phone}
+            newvalues = {"$set": {"phone": phone_update.text}}
+
+            mycol.update_one(myquery, newvalues)
 
 
 class SchoolApp(MDApp):
@@ -302,17 +345,24 @@ class SchoolApp(MDApp):
     profile_image = ObjectProperty(_profile_image)
 
     def get_user_profile_info(self):
-        import json
 
-        with open('_file.txt') as json_file:
-            data = json.load(json_file)
-            for p in data['user']:
-                self.name = p['name']
-                self.grade = p['grade']
-                self.student_id = p['stud_id']
-                self.phone = p['phone']
-                self.password = p['passwd']
-                self.profile_image = p['photo_link']
+        connection = sqlite3.connect("school.db")
+        cursor = connection.cursor()
+        data_query = "select * from user"
+        cursor.execute(data_query)
+
+        fetch = cursor.fetchone()
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        self.name = fetch[3]
+        self.grade =  fetch[4]
+        self.student_id = fetch[0]
+        self.phone = fetch[5]
+        self.password = fetch[1]
+        self.profile_image = fetch[6]
 
     def __init__(self, **kwargs):
         super(SchoolApp, self).__init__(**kwargs)
@@ -328,14 +378,20 @@ class SchoolApp(MDApp):
         self.root.current = 'LibraryDashboardScreen'
 
     def switch_log_in_screen(self):
+        connection = sqlite3.connect("school.db")
+        cursor = connection.cursor()
+        data_query = "DROP TABLE user"
+        cursor.execute(data_query)
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        _create_local_db()
         self.root.current = 'LogInScreen'
 
 
 if __name__ == '__main__':
+    _create_local_db()
     from kivy.core.window import Window
-
     Window.size = (400, 650)
     SchoolApp().run()
-
-
-
