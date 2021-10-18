@@ -86,7 +86,7 @@ ScreenManager:
             rgba: 0, 0, 0, 2
         Line:
             width: 0.5
-            rectangle: (self.x, self.y-2, self.width, self.height)
+            rectangle: (self.x-4, self.y-8, self.width+8, self.height)
     Label:
         size_hint: 0.1, 0
 
@@ -120,6 +120,7 @@ ScreenManager:
 
     Label:
         size_hint: 0.1, 0.06
+
 
 
 <LogInScreen>:
@@ -283,6 +284,7 @@ ScreenManager:
 
     MDGridLayout:
         cols: 3
+        rows: 2
         padding: 10
         spacing: 0.01
 
@@ -318,6 +320,7 @@ ScreenManager:
         pos_hint: {'center_x': 0.501, 'center_y': 0}
         size_hint: (1, 0.9)
 
+
         MDGridLayout:
             cols: 2
             rows: 1
@@ -325,7 +328,7 @@ ScreenManager:
             Image:
                 source: 'images/borrowedbooks.png'
 
-            Label:
+            Button:
                 text: '2'
                 size_hint:(0.1, 2)
                 color: 1,0,1,1
