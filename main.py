@@ -16,8 +16,17 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import TwoLineAvatarIconListItem
 from kivymd.uix.screen import MDScreen
 
+searchBarData = []
+cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+db = cluster["lapiz"]
 
-searchBarData = ['school', 'library', 'management', 'with', 'search', 'capability']
+collection = db["lib_resource"]
+results = collection.find()
+
+for r in results:
+    book_title = r.get('resource_desc')
+    print(book_title)
+    searchBarData.append(book_title)
 
 
 def _create_local_db():
@@ -159,59 +168,59 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
         password_entry = self.password_entered
         student_id_ent = self.student_id
-        # self.switch_to_dashboard_screen()
+        self.switch_to_dashboard_screen()
 
-        cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
-        db = cluster["lapiz"]
-
-        stud_results = db.student.find({'_id': student_id_ent.text})
-
-        for r in stud_results:
-            F_name = r.get('first_name')
-            S_name = r.get('last_name')
-            person_name = F_name + ' ' + S_name
-            person_grade = r.get('class')
-            person_id = r.get('_id')
-            person_phone = r.get('phone')
-            person_password = r.get('password')
-            profile_image_link = r.get('photo_lnk')
-
-            if person_password != password_entry.text or len(person_password) == 0:
-                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
-                wrong_password_dialog.radius = [20, 7, 20, 7]
-                wrong_password_dialog.size_hint_x = dp(0.5)
-                wrong_password_dialog.open()
-
-            elif person_id != student_id_ent.text or len(person_id) == 0:
-                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
-                wrong_password_dialog.radius = [20, 7, 20, 7]
-                wrong_password_dialog.size_hint_x = dp(0.5)
-                wrong_password_dialog.open()
-
-            else:
-
-                # ''' Temporary MongoDb user storage [ on_user_logIn ]'''
-                name = person_name
-                grade = person_grade
-                stud_id = person_id
-                phone = person_phone
-                passwd = person_password
-                photo_link = profile_image_link
-
-                connection = sqlite3.connect("school.db")
-                cursor = connection.cursor()
-                data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
-                cursor.execute(data_query)
-
-                connection.commit()
-                cursor.close()
-                connection.close()
-
-                # ''' Temporary MongoDb user storage END'''
-
-                self.switch_to_dashboard_screen()
-                password_entry.text = ''
-                student_id_ent.text = ''
+        # cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+        # db = cluster["lapiz"]
+        #
+        # stud_results = db.student.find({'_id': student_id_ent.text})
+        #
+        # for r in stud_results:
+        #     F_name = r.get('first_name')
+        #     S_name = r.get('last_name')
+        #     person_name = F_name + ' ' + S_name
+        #     person_grade = r.get('class')
+        #     person_id = r.get('_id')
+        #     person_phone = r.get('phone')
+        #     person_password = r.get('password')
+        #     profile_image_link = r.get('photo_lnk')
+        #
+        #     if person_password != password_entry.text or len(person_password) == 0:
+        #         wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+        #         wrong_password_dialog.radius = [20, 7, 20, 7]
+        #         wrong_password_dialog.size_hint_x = dp(0.5)
+        #         wrong_password_dialog.open()
+        #
+        #     elif person_id != student_id_ent.text or len(person_id) == 0:
+        #         wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+        #         wrong_password_dialog.radius = [20, 7, 20, 7]
+        #         wrong_password_dialog.size_hint_x = dp(0.5)
+        #         wrong_password_dialog.open()
+        #
+        #     else:
+        #
+        #         # ''' Temporary MongoDb user storage [ on_user_logIn ]'''
+        #         name = person_name
+        #         grade = person_grade
+        #         stud_id = person_id
+        #         phone = person_phone
+        #         passwd = person_password
+        #         photo_link = profile_image_link
+        #
+        #         connection = sqlite3.connect("school.db")
+        #         cursor = connection.cursor()
+        #         data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
+        #         cursor.execute(data_query)
+        #
+        #         connection.commit()
+        #         cursor.close()
+        #         connection.close()
+        #
+        #         # ''' Temporary MongoDb user storage END'''
+        #
+        #         self.switch_to_dashboard_screen()
+        #         password_entry.text = ''
+        #         student_id_ent.text = ''
 
 
 class PhoneUpdateDialog(BoxLayout):
