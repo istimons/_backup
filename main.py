@@ -24,9 +24,13 @@ collection = db["lib_resource"]
 results = collection.find()
 
 for r in results:
-    book_title = r.get('resource_desc')
-    print(book_title)
-    searchBarData.append(book_title)
+    book_title_with_id = r.get('resource_desc')
+    book_id = r.get('_id')
+    print(book_title_with_id, book_id)
+    # print(book_title_with_id)
+
+    searchBarData.append(book_title_with_id)
+    # list(searchBarData)
 
 
 def _create_local_db():
@@ -89,6 +93,10 @@ class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
 
     def apply_selection(self, rv, index, is_selected):
         """ Respond to the selection of items in the view. """
+        # if is_selected:
+        #     print(r.data[index])
+        # else:
+        #     print(r.data[index])
 
 
 # ----- Recycle view options end------- #
@@ -124,7 +132,7 @@ class CatalogSearchBoxScreen(BoxLayout):
         self.ids.search_results_list.data = []
         for item_name in searchBarData:
             if search:
-                if text in item_name:
+                if text.lower() in item_name.lower():
                     add_item(item_name)
             else:
                 add_item(item_name)
@@ -184,6 +192,7 @@ class LogInScreen(ThemableBehavior, MDScreen):
         #     person_phone = r.get('phone')
         #     person_password = r.get('password')
         #     profile_image_link = r.get('photo_lnk')
+        #     print()
         #
         #     if person_password != password_entry.text or len(person_password) == 0:
         #         wrong_password_dialog = MDDialog(text="Wrong Username/Password")
@@ -198,29 +207,29 @@ class LogInScreen(ThemableBehavior, MDScreen):
         #         wrong_password_dialog.open()
         #
         #     else:
-        #
-        #         # ''' Temporary MongoDb user storage [ on_user_logIn ]'''
-        #         name = person_name
-        #         grade = person_grade
-        #         stud_id = person_id
-        #         phone = person_phone
-        #         passwd = person_password
-        #         photo_link = profile_image_link
-        #
-        #         connection = sqlite3.connect("school.db")
-        #         cursor = connection.cursor()
-        #         data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
-        #         cursor.execute(data_query)
-        #
-        #         connection.commit()
-        #         cursor.close()
-        #         connection.close()
-        #
-        #         # ''' Temporary MongoDb user storage END'''
-        #
-        #         self.switch_to_dashboard_screen()
-        #         password_entry.text = ''
-        #         student_id_ent.text = ''
+
+                # ''' Temporary MongoDb user storage [ on_user_logIn ]'''
+                # name = person_name
+                # grade = person_grade
+                # stud_id = person_id
+                # phone = person_phone
+                # passwd = person_password
+                # photo_link = profile_image_link
+                #
+                # connection = sqlite3.connect("school.db")
+                # cursor = connection.cursor()
+                # data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
+                # cursor.execute(data_query)
+                #
+                # connection.commit()
+                # cursor.close()
+                # connection.close()
+
+                # ''' Temporary MongoDb user storage END'''
+
+                # self.switch_to_dashboard_screen()
+                # password_entry.text = ''
+                # student_id_ent.text = ''
 
 
 class PhoneUpdateDialog(BoxLayout):
@@ -404,3 +413,6 @@ if __name__ == '__main__':
     from kivy.core.window import Window
     Window.size = (400, 650)
     SchoolApp().run()
+
+
+
