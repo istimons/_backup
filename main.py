@@ -3,9 +3,10 @@ import sqlite3
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
+from kivymd.uix.button import MDRoundFlatIconButton
 from pymongo import MongoClient
 from kivy.metrics import *
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import BooleanProperty, ObjectProperty, StringProperty, ListProperty
 from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.popup import Popup
 from kivy.uix.recycleboxlayout import RecycleBoxLayout
@@ -14,7 +15,7 @@ from kivy.uix.recycleview.views import RecycleDataViewBehavior
 from kivymd.app import MDApp
 from kivymd.theming import ThemableBehavior
 from kivymd.toast import toast
-from kivymd.uix.boxlayout import BoxLayout
+from kivymd.uix.boxlayout import BoxLayout, MDBoxLayout
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.list import TwoLineAvatarIconListItem
 from kivymd.uix.screen import MDScreen
@@ -27,13 +28,10 @@ collection = db["lib_resource"]
 results = collection.find()
 
 for r in results:
-    book_title_with_id = r.get('resource_desc')
+    book = r
     book_id = r.get('_id')
-
-    # print(book_title_with_id)
-
-    searchBarData.append(book_title_with_id)
-    # list(searchBarData)
+    print('Books', r)
+    searchBarData.append(book)
 
 
 def _create_local_db():
@@ -69,35 +67,29 @@ def _create_local_db():
 
 # ----- Recycle view options------- #
 
+class StudentItem(BoxLayout):
+    """  """
+
+    auth_name = 'timon'
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
     """ Adds selection and focus behaviour to the view. """
 
 
-class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
+class SelectableButton(RecycleDataViewBehavior, GridLayout):
 
     """ Add selection support to the Label """
     index = None
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
 
-    # def __init__(self, **kwargs):
-    #     super(SelectableButton, self).__init__(**kwargs)
-
-    # text: "Two-line item with avatar"
-    # secondary_text: "Secondary text here"
-    # IconLeftWidget:
-    # icon: "plus"
-    # IconRightWidget:
-    # icon: "minus"
-    #
-    #     GridLayout.cols = 2
-    #     GridLayout.add_widget(self, Button(text=book_title_with_id))
-    #     GridLayout.add_widget(self, Button(text='hehe'))
+    GridLayout.cols= 2
+    # GridLayout.opacity = 0
 
     def refresh_view_attrs(self, rv, index, data):
         """ Catch and handle the view changes """
+
         self.index = index
         return super(SelectableButton, self).refresh_view_attrs(rv, index, data)
 
@@ -110,10 +102,9 @@ class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
 
     def apply_selection(self, rv, index, is_selected):
         """ Respond to the selection of items in the view. """
-        # if is_selected:
-        #     print(r.data[index])
-        # else:
-        #     print(r.data[index])
+        if is_selected:
+            x = rv.data[index]
+            print(x.get('text'))
 
 
 # ----- Recycle view options end------- #
@@ -132,24 +123,36 @@ class CatalogSearchBoxScreen(BoxLayout):
 
     """
 
+    data_items = ListProperty([])
+
     def __init__(self, **kwargs):
         super(CatalogSearchBoxScreen, self).__init__(**kwargs)
+
+        # self.data_items = [{'book_title': 'new', 'auth_name': 'tom'},
+        #                    {'auth_name': 'toma', 'book_title': 'news'},
+        #                    {'auth_name': 'tomb', 'book_title': 'newc'},
+        #                    {'auth_name': 'tomh', 'book_title': 'newf'},
+        #                    {'auth_name': 'totm', 'book_title': 'newh'}]
+        # print(self.data_items)
 
     def set_items_list(self, text="", search=False):
         """ Builds a list of items for the screen """
 
         def add_item(item_name):
+            print('Data', item_name)
             self.ids.search_results_list.data.append(
                 {
-                    "viewclass": "SelectableButton",
-                    "text": item_name,
+                    "viewclass": "StudentItem",
+                    "d_auth_name": item_name.get('author_code'),
+                    "d_book_title": item_name.get('resource_desc'),
                 }
             )
 
         self.ids.search_results_list.data = []
+        # self.ids.search_results_list.data = []
         for item_name in searchBarData:
             if search:
-                if text.lower() in item_name.lower():
+                if text.lower() in item_name.get('resource_desc').lower():
                     add_item(item_name)
             else:
                 add_item(item_name)
@@ -209,7 +212,6 @@ class LogInScreen(ThemableBehavior, MDScreen):
             person_phone = r.get('phone')
             person_password = r.get('password')
             profile_image_link = r.get('photo_lnk')
-            print()
 
             if person_password != password_entry.text or len(person_password) == 0:
                 wrong_password_dialog = MDDialog(text="Wrong Username/Password")
@@ -379,6 +381,8 @@ class SchoolApp(MDApp):
     password = ObjectProperty(_password_data)
     profile_image = ObjectProperty(_profile_image)
 
+    data_items = ListProperty([])
+
     def get_user_profile_info(self):
 
         connection = sqlite3.connect("school.db")
@@ -402,6 +406,8 @@ class SchoolApp(MDApp):
     def __init__(self, **kwargs):
         super(SchoolApp, self).__init__(**kwargs)
         self.theme_cls.primary_palette = "Indigo"
+
+        data_items = searchBarData
 
     def switch_to_catalog_screen(self):
         self.root.current = 'CatalogSearchScreen'

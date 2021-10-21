@@ -183,6 +183,36 @@ ScreenManager:
                 angle_start: 0
                 angle_end: 360
 
+<StudentItem>:
+
+    d_auth_name: ''
+    d_book_title: ''
+
+    MDBoxLayout:
+        orientation: 'horizontal'
+
+        Image:
+            source:'avatar.png'
+            allow_stretch: True
+            size_hint: dp(0.1), dp(1)
+
+
+        MDBoxLayout:
+            orientation: 'vertical'
+
+            MDLabel:
+                markup: True
+
+                text: "[b]" + root.d_book_title + "[/b]"
+
+
+            MDLabel:
+                text: root.d_auth_name
+
+        MDRoundFlatIconButton:
+            size_hint_x: 0.2
+            icon: 'plus'
+
 
 <SelectableButton>:
     # Draw a bg to indicate selection
@@ -194,6 +224,12 @@ ScreenManager:
         Rectangle:
             pos: self.pos
             size: self.size
+
+    Button:
+        text: "+"
+        size_hint_x: None
+        width: sp(34)
+
 
 <CatalogSearchScreen>:
 
@@ -242,7 +278,9 @@ ScreenManager:
 
     RecycleView:
         id: search_results_list
-        key_viewclass: 'viewclass'
+        viewclass: 'StudentItem'
+#        data: [{'d_auth_name': str(x['author_code']), 'd_book_title': str(x['resource_desc'])} for x in root.data_items]
+#        key_viewclass: 'viewclass'
         key_size: 'height'
 
         do_scroll_y: True
@@ -258,6 +296,7 @@ ScreenManager:
             orientation: 'vertical'
             spacing: dp(2)
             padding: dp(2)
+
 
     MDLabel:
         size_hint: 1, 0.02
@@ -320,13 +359,15 @@ ScreenManager:
         pos_hint: {'center_x': 0.501, 'center_y': 0}
         size_hint: (1, 0.9)
 
-
         MDGridLayout:
             cols: 2
             rows: 1
 
             Image:
                 source: 'images/borrowedbooks.png'
+                allow_stretch: True
+                width: 200
+                height: 200
 
             Label:
                 text: '2'
@@ -342,6 +383,9 @@ ScreenManager:
 
             Image:
                 source: 'images/group.png'
+                allow_stretch: True
+                width: 200
+                height: 200
 
             Label:
                 text: '0'
@@ -358,12 +402,18 @@ ScreenManager:
 
             Image:
                 source: 'images/booksready.png'
-                size_hint_x: 1
+                allow_stretch: True
+                width: 200
+                height: 200
 
             Label:
                 text: '3'
                 size_hint:(0.1, 0.05)
                 color: 1,0,1,1
+
+    Label:
+        size_hint: 1, 0.05
+
 
     Footer:
     Label:
@@ -380,8 +430,8 @@ ScreenManager:
     orientation: 'vertical'
     height: "10dp"
 
-    on_touch_down:
-        app.get_user_profile_info()
+#    on_touch_down:
+#        app.get_user_profile_info()
 
     Label:
         size_hint: 1, 0.05
