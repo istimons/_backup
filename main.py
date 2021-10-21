@@ -1,5 +1,8 @@
 import sqlite3
 
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
 from pymongo import MongoClient
 from kivy.metrics import *
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
@@ -26,7 +29,6 @@ results = collection.find()
 for r in results:
     book_title_with_id = r.get('resource_desc')
     book_id = r.get('_id')
-    TwoLineAvatarIconListItem.secondary_text = book_id
 
     # print(book_title_with_id)
 
@@ -35,7 +37,7 @@ for r in results:
 
 
 def _create_local_db():
-    ''' Start with a Local DataBase, create one if it does not exist. '''
+    """ Start with a Local DataBase, create one if it does not exist. """
 
     try:
         connection = sqlite3.connect("school.db")
@@ -76,6 +78,12 @@ class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
 class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
 
     """ Add selection support to the Label """
+    index = None
+    selected = BooleanProperty(False)
+    selectable = BooleanProperty(True)
+
+    # def __init__(self, **kwargs):
+    #     super(SelectableButton, self).__init__(**kwargs)
 
     # text: "Two-line item with avatar"
     # secondary_text: "Secondary text here"
@@ -83,15 +91,10 @@ class SelectableButton(RecycleDataViewBehavior, TwoLineAvatarIconListItem):
     # icon: "plus"
     # IconRightWidget:
     # icon: "minus"
-
-    # TwoLineAvatarIconListItem.secondary_text = book_id
-    # TwoLineAvatarIconListItem.icon = 'button'
-    # TwoLineAvatarIconListItem.text = 'hehe'
-    # TwoLineAvatarIconListItem.text = 'hehe'
-
-    index = None
-    selected = BooleanProperty(False)
-    selectable = BooleanProperty(True)
+    #
+    #     GridLayout.cols = 2
+    #     GridLayout.add_widget(self, Button(text=book_title_with_id))
+    #     GridLayout.add_widget(self, Button(text='hehe'))
 
     def refresh_view_attrs(self, rv, index, data):
         """ Catch and handle the view changes """
