@@ -183,18 +183,20 @@ ScreenManager:
                 angle_start: 0
                 angle_end: 360
 
-<StudentItem>:
+<CatalogData>:
 
     d_auth_name: ''
     d_book_title: ''
 
-    MDBoxLayout:
-        orientation: 'horizontal'
+    MDGridLayout:
+        cols:3
+        padding: 100
+        spacing: 50
 
         Image:
             source:'avatar.png'
             allow_stretch: True
-            size_hint: dp(0.1), dp(1)
+            size_hint: dp(0.1), dp(2)
 
 
         MDBoxLayout:
@@ -239,7 +241,7 @@ ScreenManager:
 
 <CatalogSearchBoxScreen>:
     orientation: 'vertical'
-    height: "40dp"
+    height: "20dp"
     adaptive_height: True
 
     search_input: search_input
@@ -278,9 +280,7 @@ ScreenManager:
 
     RecycleView:
         id: search_results_list
-        viewclass: 'StudentItem'
-#        data: [{'d_auth_name': str(x['author_code']), 'd_book_title': str(x['resource_desc'])} for x in root.data_items]
-#        key_viewclass: 'viewclass'
+        viewclass: 'CatalogData'
         key_size: 'height'
 
         do_scroll_y: True

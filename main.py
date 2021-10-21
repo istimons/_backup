@@ -29,8 +29,6 @@ results = collection.find()
 
 for r in results:
     book = r
-    book_id = r.get('_id')
-    print('Books', r)
     searchBarData.append(book)
 
 
@@ -67,10 +65,9 @@ def _create_local_db():
 
 # ----- Recycle view options------- #
 
-class StudentItem(BoxLayout):
-    """  """
+class CatalogData(BoxLayout):
+    """ Catalog Items from search """
 
-    auth_name = 'timon'
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
@@ -83,9 +80,6 @@ class SelectableButton(RecycleDataViewBehavior, GridLayout):
     index = None
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
-
-    GridLayout.cols= 2
-    # GridLayout.opacity = 0
 
     def refresh_view_attrs(self, rv, index, data):
         """ Catch and handle the view changes """
@@ -102,9 +96,6 @@ class SelectableButton(RecycleDataViewBehavior, GridLayout):
 
     def apply_selection(self, rv, index, is_selected):
         """ Respond to the selection of items in the view. """
-        if is_selected:
-            x = rv.data[index]
-            print(x.get('text'))
 
 
 # ----- Recycle view options end------- #
@@ -123,33 +114,22 @@ class CatalogSearchBoxScreen(BoxLayout):
 
     """
 
-    data_items = ListProperty([])
-
     def __init__(self, **kwargs):
         super(CatalogSearchBoxScreen, self).__init__(**kwargs)
-
-        # self.data_items = [{'book_title': 'new', 'auth_name': 'tom'},
-        #                    {'auth_name': 'toma', 'book_title': 'news'},
-        #                    {'auth_name': 'tomb', 'book_title': 'newc'},
-        #                    {'auth_name': 'tomh', 'book_title': 'newf'},
-        #                    {'auth_name': 'totm', 'book_title': 'newh'}]
-        # print(self.data_items)
 
     def set_items_list(self, text="", search=False):
         """ Builds a list of items for the screen """
 
         def add_item(item_name):
-            print('Data', item_name)
             self.ids.search_results_list.data.append(
                 {
-                    "viewclass": "StudentItem",
+                    "viewclass": "CatalogData",
                     "d_auth_name": item_name.get('author_code'),
                     "d_book_title": item_name.get('resource_desc'),
                 }
             )
 
         self.ids.search_results_list.data = []
-        # self.ids.search_results_list.data = []
         for item_name in searchBarData:
             if search:
                 if text.lower() in item_name.get('resource_desc').lower():
@@ -196,59 +176,59 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
         password_entry = self.password_entered
         student_id_ent = self.student_id
-        # self.switch_to_dashboard_screen()
+        self.switch_to_dashboard_screen()
 
-        cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
-        db = cluster["lapiz"]
-
-        stud_results = db.student.find({'_id': student_id_ent.text})
-
-        for r in stud_results:
-            F_name = r.get('first_name')
-            S_name = r.get('last_name')
-            person_name = F_name + ' ' + S_name
-            person_grade = r.get('class')
-            person_id = r.get('_id')
-            person_phone = r.get('phone')
-            person_password = r.get('password')
-            profile_image_link = r.get('photo_lnk')
-
-            if person_password != password_entry.text or len(person_password) == 0:
-                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
-                wrong_password_dialog.radius = [20, 7, 20, 7]
-                wrong_password_dialog.size_hint_x = dp(0.5)
-                wrong_password_dialog.open()
-
-            elif person_id != student_id_ent.text or len(person_id) == 0:
-                wrong_password_dialog = MDDialog(text="Wrong Username/Password")
-                wrong_password_dialog.radius = [20, 7, 20, 7]
-                wrong_password_dialog.size_hint_x = dp(0.5)
-                wrong_password_dialog.open()
-
-            else:
-
-                ''' Temporary MongoDb user storage [ on_user_logIn ]'''
-                name = person_name
-                grade = person_grade
-                stud_id = person_id
-                phone = person_phone
-                passwd = person_password
-                photo_link = profile_image_link
-
-                connection = sqlite3.connect("school.db")
-                cursor = connection.cursor()
-                data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
-                cursor.execute(data_query)
-
-                connection.commit()
-                cursor.close()
-                connection.close()
-
-                ''' Temporary MongoDb user storage END'''
-
-                self.switch_to_dashboard_screen()
-                password_entry.text = ''
-                student_id_ent.text = ''
+        # cluster = MongoClient("mongodb://library:pencil1234@44.199.16.91:29017/?authSource=admin")
+        # db = cluster["lapiz"]
+        #
+        # stud_results = db.student.find({'_id': student_id_ent.text})
+        #
+        # for r in stud_results:
+        #     F_name = r.get('first_name')
+        #     S_name = r.get('last_name')
+        #     person_name = F_name + ' ' + S_name
+        #     person_grade = r.get('class')
+        #     person_id = r.get('_id')
+        #     person_phone = r.get('phone')
+        #     person_password = r.get('password')
+        #     profile_image_link = r.get('photo_lnk')
+        #
+        #     if person_password != password_entry.text or len(person_password) == 0:
+        #         wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+        #         wrong_password_dialog.radius = [20, 7, 20, 7]
+        #         wrong_password_dialog.size_hint_x = dp(0.5)
+        #         wrong_password_dialog.open()
+        #
+        #     elif person_id != student_id_ent.text or len(person_id) == 0:
+        #         wrong_password_dialog = MDDialog(text="Wrong Username/Password")
+        #         wrong_password_dialog.radius = [20, 7, 20, 7]
+        #         wrong_password_dialog.size_hint_x = dp(0.5)
+        #         wrong_password_dialog.open()
+        #
+        #     else:
+        #
+        #         ''' Temporary MongoDb user storage [ on_user_logIn ]'''
+        #         name = person_name
+        #         grade = person_grade
+        #         stud_id = person_id
+        #         phone = person_phone
+        #         passwd = person_password
+        #         photo_link = profile_image_link
+        #
+        #         connection = sqlite3.connect("school.db")
+        #         cursor = connection.cursor()
+        #         data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
+        #         cursor.execute(data_query)
+        #
+        #         connection.commit()
+        #         cursor.close()
+        #         connection.close()
+        #
+        #         ''' Temporary MongoDb user storage END'''
+        #
+        #         self.switch_to_dashboard_screen()
+        #         password_entry.text = ''
+        #         student_id_ent.text = ''
 
 
 class PhoneUpdateDialog(BoxLayout):
@@ -381,8 +361,6 @@ class SchoolApp(MDApp):
     password = ObjectProperty(_password_data)
     profile_image = ObjectProperty(_profile_image)
 
-    data_items = ListProperty([])
-
     def get_user_profile_info(self):
 
         connection = sqlite3.connect("school.db")
@@ -406,8 +384,6 @@ class SchoolApp(MDApp):
     def __init__(self, **kwargs):
         super(SchoolApp, self).__init__(**kwargs)
         self.theme_cls.primary_palette = "Indigo"
-
-        data_items = searchBarData
 
     def switch_to_catalog_screen(self):
         self.root.current = 'CatalogSearchScreen'
