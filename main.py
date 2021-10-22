@@ -44,7 +44,7 @@ def _create_local_db():
             password varchar NOT NULL,
             entries varchar,
             name varchar,
-            grade varchar,
+            current_class varchar,
             phone varchar,
             photo_link varchar)
          """)
@@ -52,7 +52,7 @@ def _create_local_db():
         cursor.execute(""" CREATE INDEX studentId on user (studentId) """)
         cursor.execute(""" CREATE INDEX password on user (password) """)
         cursor.execute(""" CREATE INDEX name on user (name) """)
-        cursor.execute(""" CREATE INDEX grade on user (grade) """)
+        cursor.execute(""" CREATE INDEX current_class on user (current_class) """)
         cursor.execute(""" CREATE INDEX phone on user (phone) """)
         cursor.execute(""" CREATE INDEX photo_link on user (photo_link) """)
 
@@ -65,18 +65,19 @@ def _create_local_db():
 
 # ----- Recycle view options------- #
 
-class CatalogData(BoxLayout):
-    """ Catalog Items from search """
-
 
 class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
     """ Adds selection and focus behaviour to the view. """
 
 
-class SelectableButton(RecycleDataViewBehavior, GridLayout):
+class CatalogData(RecycleDataViewBehavior, BoxLayout):
+    """ Catalog Items from search """
 
-    """ Add selection support to the Label """
+
+# class SelectableButton(RecycleDataViewBehavior, GridLayout):
+#
+#     """ Add selection support to the Label """
     index = None
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
@@ -85,11 +86,11 @@ class SelectableButton(RecycleDataViewBehavior, GridLayout):
         """ Catch and handle the view changes """
 
         self.index = index
-        return super(SelectableButton, self).refresh_view_attrs(rv, index, data)
+        return super(CatalogData, self).refresh_view_attrs(rv, index, data)
 
     def on_touch_down(self, touch):
         """ Add Selection on touch down """
-        if super(SelectableButton, self).on_touch_down(touch):
+        if super(CatalogData, self).on_touch_down(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:
             return self.parent.select_with_touch(self.index, touch)
@@ -187,7 +188,7 @@ class LogInScreen(ThemableBehavior, MDScreen):
             F_name = r.get('first_name')
             S_name = r.get('last_name')
             person_name = F_name + ' ' + S_name
-            person_grade = r.get('class')
+            person_grade = r.get('current_class')
             person_id = r.get('_id')
             person_phone = r.get('phone')
             person_password = r.get('password')
@@ -217,7 +218,7 @@ class LogInScreen(ThemableBehavior, MDScreen):
 
                 connection = sqlite3.connect("school.db")
                 cursor = connection.cursor()
-                data_query = "insert into user (name, grade, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
+                data_query = "insert into user (name, current_class, studentId, phone, password, photo_link) values ('" + name + "', '" + grade + "', '" + stud_id + "', '" + phone + "', '" + passwd + "', '" + photo_link + "' )"
                 cursor.execute(data_query)
 
                 connection.commit()
