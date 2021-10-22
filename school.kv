@@ -185,6 +185,9 @@ ScreenManager:
 
 <CatalogData>:
 
+    book_title: book_title
+
+
     d_auth_name: ''
     d_book_title: ''
 
@@ -202,6 +205,7 @@ ScreenManager:
             orientation: 'vertical'
 
             MDLabel:
+                id: book_title
                 markup: True
 
                 text: "[b]" + root.d_book_title + "[/b]"
@@ -212,6 +216,8 @@ ScreenManager:
         MDRoundFlatIconButton:
             size_hint_x: 0.2
             icon: 'plus'
+            on_press:
+                root.hold_book_title()
 
 
 <CatalogSearchScreen>:
@@ -505,6 +511,7 @@ ScreenManager:
         MDGridLayout:
             cols: 2
             rows: 1
+
 
             MDLabel:
                 text: '********'

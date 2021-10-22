@@ -74,6 +74,16 @@ class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
 class CatalogData(RecycleDataViewBehavior, BoxLayout):
     """ Catalog Items from search """
 
+    book_title = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(CatalogData, self).__init__(**kwargs)
+
+    def hold_book_title(self):
+        """ Method to add a hold request to a book """
+
+        print(self.ids.book_title.text)
+
 
 # class SelectableButton(RecycleDataViewBehavior, GridLayout):
 #
